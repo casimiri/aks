@@ -1,0 +1,19 @@
+helm init
+
+kubectl create serviceaccount --namespace kube-system tiller
+
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+
+kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+
+helm install --name kzwp stable/wordpress
+
+export SERVICE_IP=$(kubectl get svc --namespace default kzwp-wordpress --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}")
+
+echo "WordPress URL: http://$SERVICE_IP/"
+
+echo "WordPress Admin URL: http://$SERVICE_IP/admin"
+
+echo Username: user
+
+echo Password: $(kubectl get secret --namespace default kzwp-wordpress -o jsonpath="{.data.wordpress-password}" | base64 --decode)
