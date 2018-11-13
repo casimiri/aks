@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: reviews
+spec:
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: reviews
+        version: v1
+    spec:
+      containers:
+      - name: reviews
+        image: istio/examples-bookinfo-reviews-v2:1.8.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9080      
